@@ -1,0 +1,80 @@
+# Ruby CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+#
+version: 2
+jobs:
+  build:
+    parallelism: 3
+    working_directory: ~/manyou
+
+    docker:
+        - image: circleci/ruby
+    #   - image: circleci/ruby:2.4.2-jessie-node  # language image
+    #     environment:
+    #       BUNDLE_JOBS: 3
+    #       BUNDLE_RETRY: 3
+    #       BUNDLE_PATH: vendor/bundle
+    #       PGHOST: 127.0.0.1
+        #   PGUSER: circleci-demo-ruby
+        #   RAILS_ENV: test
+    #   - image: circleci/postgres:9.5-alpine  # service image
+    #     environment:
+    #       POSTGRES_USER: circleci-demo-ruby
+    #       POSTGRES_DB: rails_blog
+    #       POSTGRES_PASSWORD: ""
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+      keys:
+        - manyou-bundle-v2-{{ checksum "Gemfile.lock" }}
+        - manyou-bundle-v2-
+
+        - run:
+            name: Bundle Install
+            command: bundle check --path vendor/bundle || bundle install --deployment
+
+        # Store bundle cache
+        - save_cache:
+            key: manyou-bundle-v2-{{ checksum "Gemfile.lock" }}
+            paths:
+            - vendor/bundle
+
+        - restore_cache:
+      keys:
+        - manyou-yarn-{{ checksum "yarn.lock" }}
+        - manyou-yarn-
+
+        - run:
+            name: Yarn Install
+            command: yarn install --cache-folder ~/.cache/yarn
+
+        # Store yarn / webpacker cache
+        - save_cache:
+            key: manyou-yarn-{{ checksum "yarn.lock" }}
+            paths:
+              - ~/.cache/yarn    
+
+      # Database setup
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - run:
+          name: Database setup
+          command: bin/rails db:schema:load --trace
+
+      # run tests!
+      - run: |
+      bundle exec rspec --profile 10 \
+                        --format RspecJunitFormatter \
+                        --out test_results/rspec.xml \
+                        --format progress \
+                        $(circleci tests glob "spec/features/task.spec.rb" | circleci tests split --split-by=timings)
+
+  # Save test results for timing analysis
+      - store_test_results:
+          path: test_results

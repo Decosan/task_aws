@@ -1,0 +1,55 @@
+<h1>User Info.</h1>
+<div class='row'>
+  <div class='col-xs-5'>
+    <% if @user.admin? %>
+      <%= link_to "Admin Page",admin_users_path,class:'btn btn-primary btn-sm' %>
+    <% end %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <% if @user.avatar.attached? %>
+          <%= image_tag @user.avatar.variant(resize: "400x250"), style:'border-radius: 5%;' %>
+        <% end %>
+        <%= form_with(model: @user,local: true)do |f| %>
+          <%= f.file_field :avatar %>
+          <%= f.submit '決定',class:'btn btn-primary btn-xs' %>
+        <% end %>  
+      </div>
+      <div class="panel-body">
+        USER: <%= @user.name %> 
+      </div>
+      <div class="panel-footer">
+        Registerd: <%= @user.created_at.strftime('%Y/%m/%d') %>
+      </div>
+    </div> 
+  </div>
+
+  <div class="col-xs-7">
+    <ul class="nav nav-pills">
+      <li role="presentation" class='<%= "active" if current_page?(user_path(@user)) %>'><%= link_to user_path(@user) do %>タスク期限<% end %></li>
+      <li role="presentation" class='<%= "active" if current_page?(anaylsis_user_path(@user)) %>'><%= link_to anaylsis_user_path(@user) do %>ラベル管理<% end %></li>
+    </ul>
+      <h4 class="glyphicon glyphicon-hand-right"> ラベル一覧</h4><br>
+      <%= link_to "新規ラベル作成", new_label_path,class:'btn btn-primary btn-md' %>
+      <ul class="media-list">
+        <% @labels.each.with_index(1) do |label,idx| %>
+          <li class="media" style='width: 300px'>
+            <h5 class="media-left" style="color: blue;">
+              No.<%= idx %>
+            </h5>
+            <div class="media-body">
+              <%= label.title %>
+              <div class="flex-box">
+      
+                <div class='flex-item'><%= link_to 'Edit', edit_label_path(label.id),class:'btn btn-success btn-xs' %></div>
+                <div class='flex-item'><%= link_to 'Delete', label_path(label.id),method: :delete,class:'btn btn-danger btn-xs' %></div>
+              </div>
+            </div>
+          </li>
+        <% end %>  
+      </ul>
+      <h4 class="glyphicon glyphicon-hand-right"> ラベル使用頻度</h4>
+      
+      <%= column_chart @labels.joins(:task_labels).group("labels.title").count %>
+
+  </div>
+</div>    

@@ -1,0 +1,10 @@
+
+<%= form_with(model: label,local: true)do |f| %>
+  <%= render 'layouts/error_messages',model: f.object %>
+  <div class='form'>
+    <%= f.label :title,"Title" %>
+    <%= f.text_field :title,class:'form-control' %>
+  </div>
+
+  <%= f.submit 'Go!',class:'btn btn-primary btn-lg' %>
+<% end %>

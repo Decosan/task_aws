@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1><%= @user.name %>さん、タスクの期限が間近です。</h1>
+    <ul>
+      <% @user.tasks.each do |task| %>
+        <% if task.sort_expired.present? && (Date.today - 3..Date.today).include?(task.sort_expired) %>
+          <li>
+            <p>タイトル：<%= task.title %></p>
+            <p>内容：<%= task.content %></p>
+            <p>期限：<%= task.sort_expired %></p>
+          </li> 
+        <% end %> 
+      <% end %>  
+    </ul> 
+    <p>よろしくお願い致します。</p>
+  </body>
+</html>

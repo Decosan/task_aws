@@ -1,0 +1,72 @@
+<h1><%= t("view.index") %></h1>
+<%= link_to t("view.create_task") ,new_task_path, class:'btn btn-primary btn-lg' %>
+<%= link_to "終了期限ソート", tasks_path(sort_expired: "true"), class:'btn btn-success btn-lg' %>
+<%= link_to "優先順位ソート", tasks_path(sort_priority: "true"), class:'btn btn-warning btn-lg' %>
+<%= link_to "ソート解除", tasks_path, class:'btn btn-danger btn-lg' %>
+
+<%= form_with(scope: :task,url: tasks_path, method: :get,local: true)do |f| %>
+  <%= f.label :title_search %>
+  <%= f.text_field :title, class:'form-control' %>
+
+  <%= f.label :status_search %>
+  <%= f.select :status, ['Untouched','Pending','Finished'],{include_blank: 'Select Box'} %>
+
+  <%= f.label :category_search %>
+  <%= f.collection_select :label_ids,Label.all, :id, :title,{include_blank: 'Select Box'} %>
+
+  <%= f.hidden_field :search, value: 'true' %>
+  <%= f.submit 'Search' %>
+<% end %>
+
+<%= month_calendar events: @tasks do |date,tasks| %>
+  <%= date %>
+  <% tasks.each do |task| %>
+    <div style='color: red;'>
+      <%= task.title %>
+    </div>
+  <% end %> 
+<% end %>
+
+<ul class="media-list alltasks">
+  <% @tasks.each do |task| %>
+    <li class="media">
+      <h4 class="badge">
+        <%= t("view.task") %>
+      </h4>
+      <div class="media-body">
+        <h4 class="media-heading　task-title">Title: <%= task.title %></h4>
+        Content: <%= task.content %>
+      </div>  
+      <%= link_to t("view.detail"),task_path(task.id),class:'btn btn-info btn-xs' %>
+      <div style="display: inline-block;" >
+        <% if task.sort_expired? %>
+          <p style="color: blue;">Due until: <%= task.sort_expired %> /</p>
+        <% else %>
+          <p style="color: red;">No Due /</p>  
+        <% end %>
+      </div>
+      <div style="display: inline-block;">
+        <% if task.status? %>
+          <p style="color: blue;">Status: <%= task.status %> /</p>
+        <% else %>
+          <p style="color: red;">Undefined /</p>  
+        <% end %>
+      </div>
+      <div style="display: inline-block;">
+          <p style="color: blue;">Priority: <%= task.priority %> /</p>
+      </div>
+      <div style="display: inline-block;">
+        <% if task.labels.any? %>
+          <p style="color: blue;">Category: 
+            <% task.labels.each_with_index do |label,idx| %>
+              <%= idx + 1%>: <%= label.title %>
+            <% end %>
+          </p>  
+        <% else %>
+          <p style="color: red;">No Category</p>
+        <% end %>         
+      </div>
+    </li>
+  <% end %>
+</ul>
+<%= paginate @tasks %>

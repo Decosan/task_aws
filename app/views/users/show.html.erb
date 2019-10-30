@@ -1,0 +1,82 @@
+<h1>User Info.</h1>
+<div class='row'>
+  <div class='col-xs-5'>
+    <% if @user.admin? %>
+      <%= link_to "Admin Page",admin_users_path,class:'btn btn-primary btn-sm' %>
+    <% end %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <% if @user.avatar.attached? %>
+          <%= image_tag @user.avatar.variant(resize: "400x250"), style:'border-radius: 5%;' %>
+        <% end %>
+        <%= form_with(model: @user,local: true)do |f| %>
+          <%= f.file_field :avatar %>
+          <%= f.submit '決定',class:'btn btn-primary btn-xs' %>
+        <% end %>  
+      </div>
+      <div class="panel-body">
+        USER: <%= @user.name %> 
+      </div>
+      <div class="panel-footer">
+        Registerd: <%= @user.created_at.strftime('%Y/%m/%d') %>
+      </div>
+    </div> 
+  </div>
+
+  <div class="col-xs-7">
+    <ul class="nav nav-pills">
+      <li role="presentation" class='<%= "active" if current_page?(user_path(@user)) %>'><%= link_to user_path(@user) do %>タスク期限<% end %></li>
+      <li role="presentation" class='<%= "active" if current_page?(anaylsis_user_path(@user)) %>'><%= link_to anaylsis_user_path(@user) do %>ラベル管理<% end %></li>
+    </ul>
+    <% if @tasks.any? %>
+    <h2 class='glyphicon glyphicon-alert'>直近タスク・期限の過ぎたタスク</h2>
+      <ul class="media-list">
+        <% @tasks.each do |task| %>
+          <% unless task.status == "Finished" %>
+            <li class="media">
+              <% if task.sort_expired < Date.current %>
+                <h4 class="badge" style="color: red;">OverDue</h4>
+              <% else %>
+                <h4 class="badge" style="color: skyblue;">直近タスク</h4>
+              <% end %>  
+              <div class="media-body">
+                <h4 class="media-heading　task-title">Title: <%= task.title %></h4>
+                Content: <%= task.content %>
+              </div>  
+              <div style="display: inline-block;" >
+                <% if task.sort_expired? %>
+                  <p style="color: blue;">Due until: <%= task.sort_expired %> /</p>
+                <% else %>
+                  <p style="color: red;">No Due /</p>  
+                <% end %>
+              </div>
+              <div style="display: inline-block;">
+                <% if task.status? %>
+                  <p style="color: blue;">Status: <%= task.status %> /</p>
+                <% else %>
+                  <p style="color: red;">Undefined /</p>  
+                <% end %>
+              </div>
+              <div style="display: inline-block;">
+                  <p style="color: blue;">Priority: <%= task.priority %> /</p>
+              </div>
+              <div style="display: inline-block;">
+                <% if task.labels.any? %>
+                  <p style="color: blue;">Category: 
+                    <% task.labels.each_with_index do |label,idx| %>
+                      <%= idx + 1%>: <%= label.title %>
+                    <% end %>
+                  </p>  
+                <% else %>
+                  <p style="color: red;">No Category</p>
+                <% end %>         
+              </div>
+            </li>
+          <% end %>  
+        <% end %>
+      </ul>
+    <% else %>
+      <h2 style="color: bule;">直近タスク・期限の過ぎたタスクはありません</h2>
+    <% end %>  
+  </div>
+</div>  

@@ -1,0 +1,46 @@
+<h1><%= t("view.show") %></h1>
+<%= link_to t("view.edit"),edit_task_path(@task.id),class:'btn btn-warning btn-lg' %>
+<%= link_to t("view.delete"),task_path(@task.id),method: :delete,class:'btn btn-danger btn-lg' %>
+<div class="jumbotron">
+	<h1><%= @task.title %></h1>
+	<p><%= @task.content %></p>
+	<div>
+		<% if @task.sort_expired? %>
+			<p style="color: blue;">Due until: <%= @task.sort_expired %></p>
+		<% else %>
+			<p style="color: red;">No Due</p>
+		<% end %>
+	</div>
+	<div>
+		<% if @task.status? %>
+			<p style="color: blue;">Status: <%= @task.status %></p>
+		<% else %>
+			<p style="color: red;">Undefined</p>  
+		<% end %>
+	</div>
+	<div>
+		<p style="color: blue;">Priority: <%= @task.priority %></p>
+	</div>
+	<div>
+		<% if @task.labels.any? %>
+			<p style="color: blue;">Category: 
+				<% @task.labels.each_with_index do |label,idx| %>
+					<%= idx + 1%>: <%= label.title %>
+				<% end %>
+			</p>
+		<% else %>
+			<p style="color: red;">No Category</p>
+		<% end %>	
+	</div>
+	<div>
+		<% if @task.images.attached? %>
+			<ul>
+				<% @task.images.each do |image| %>
+					<li><%= link_to "#{image.filename}", image %></li>
+				<% end %>	
+			</ul>
+		<% end %>
+	</div>
+
+	<p><a class="btn btn-primary btn-lg" href="/tasks" role="button"><%= t("view.back") %></a></p>
+</div>

@@ -1,0 +1,56 @@
+<%= form_with(model: task,local: true) do |f| %>
+  <%= render 'layouts/error_messages', model: f.object %>
+  <div class="form">
+    <%= f.label :title %>
+    <%= f.text_field :title,class:'form-control' %>
+  </div>
+
+  <div class="form">
+    <%= f.label :content %>
+    <%= f.text_field :content,class:'form-control' %>
+  </div>
+
+  <div class="form">
+    <%= f.label :sort_expired,"Date" %>
+    <%= f.date_field :sort_expired,class:'form-control' %>
+  </div>
+
+  <div>
+    <%= f.label :status, "Status" %>
+    <%= f.select :status, ['Untouched','Pending','Finished'],{include_blank: 'Select Box'} %>
+  </div>
+
+  <div>
+    <%= f.label :priority, "Priority" %>
+    <%= f.select :priority, ['Low','Mid','High']%>
+  </div>
+
+  <div>
+    <%= f.label :label, "Category check" %>
+    <div>
+      <% Label.all.each do |label| %>
+      <%= f.check_box :label_ids, { multiple: true, checked: @task.labels.find_by(id: label.id).present?, include_hidden: false }, label[:id] %>
+      <label><%= label.title %></label>
+      <% end %>
+    </div>  
+  </div>
+
+  <div>
+    <% if @task.images.attached? %>
+    <p>削除するファイルをチェック</p>
+      <ul>
+        <% @task.images.each do |image| %>
+          <li>
+            <%= f.check_box :destroy_images, { multiple: true, checked: false, include_hidden: false }, image[:id] %>
+            <label><%= image.filename %></label>
+          </li>
+        <% end %>
+        
+      </ul>
+		<% end %>
+	</div>
+  <%= f.file_field :images, multiple: true %>
+
+  <%= f.submit class:'btn btn-primary btn-block' %>
+
+<% end %>

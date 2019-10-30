@@ -1,0 +1,25 @@
+<h1>Group Index</h1>
+<%= link_to 'Create New Group',new_group_path,class:'btn btn-primary btn-lg' %>
+<ul class="media-list">
+  <% @groups.each.with_index(1) do |group,idx| %>
+    <li class="media">
+      <h4 class="media-left" style="color: blue;">
+        No.<%= idx %> 
+      </h4>
+      <div class="media-body">
+        <h4 class="media-heading"><%= group.name %></h4>
+        Registerd: <%= group.created_at.strftime('%Y/%m/%d') %> 
+        <% if group.user_groups.pluck(:user_id).include?(current_user.id) %>
+          <%= link_to "Detail",group_path(group.id),class:'btn btn-info btn-xs' %>
+          <% unless group.user_id == current_user.id %>  
+            <%= link_to "Leave..",user_group_path(id: group.id),method: :delete,class: 'btn btn-danger btn-xs' %>
+          <% else %>
+            <span class="badge">ADM</span> 
+          <% end %> 
+        <% else %>
+          <%= link_to "Join!",user_groups_path(group_id: group.id),method: :post,class: 'btn btn-success btn-xs' %>
+        <% end %>  
+      </div>
+    </li>
+  <% end %> 
+</ul>
