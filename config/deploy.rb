@@ -2,7 +2,7 @@
 lock '3.6.0'
 
 # デプロイするアプリケーション名
-set :application, 'task_aws'
+set :application, 'myapp'
 
 # cloneするgitのレポジトリ
 # （xxxxxxxx：ユーザ名、yyyyyyyy：アプリケーション名）
@@ -12,7 +12,7 @@ set :repo_url, 'https://github.com/Decosan/task_aws.git'
 set :branch, ENV['BRANCH'] || 'master'
 
 # deploy先のディレクトリ。
-set :deploy_to, '/var/www/task_aws'
+set :deploy_to, '/var/www/myapp'
 
 # シンボリックリンクをはるフォルダ・ファイル
 set :linked_files, %w{.env config/secrets.yml}
