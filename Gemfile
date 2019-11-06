@@ -51,8 +51,8 @@ group :development do
   gem 'pry-doc' # extend pry document support
   gem 'rubocop'
   gem 'rails_best_practices'
-  gem 'ed25519'
-  gem 'bcrypt_pbkdf'
+  # gem 'ed25519'
+  # gem 'bcrypt_pbkdf'
 end
 
 group :test do
