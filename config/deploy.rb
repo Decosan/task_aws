@@ -24,6 +24,7 @@ set :keep_releases, 5
 # Rubyのバージョン
 set :rbenv_ruby, '2.5.1'
 set :rbenv_type, :system
+set :rbenv_ruby, `cat .ruby-version`.chomp
 
 # 出力するログのレベル。エラーログを詳細に見たい場合は :debug に設定する。
 # 本番環境用のものであれば、 :info程度が普通。
